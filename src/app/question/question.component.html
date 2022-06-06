@@ -1,0 +1,37 @@
+<div class="question-container">
+  <select (change)="onChapterChange(chapterSelect.value)" #chapterSelect>
+    <option value="all">
+      All Chapters
+    </option>
+    <option *ngFor="let chapter of chapters" [value]="chapter">
+      Chapter {{chapter}}
+    </option>
+  </select>
+  
+  <div class="question-answer-container">
+    <div class="container">
+      <label>Question:</label>
+      <p>{{questions?.[questionIndex]?.question}}</p>
+      <ngx-monaco-editor *ngIf="questions?.[questionIndex]?.questionSnippet" [options]="editorOptions" [(ngModel)]="questions[questionIndex].questionSnippet"></ngx-monaco-editor>
+    </div>
+    
+    <div class="container" *ngIf="showAnswer">
+      <label>Answer:</label>
+      <p>{{questions?.[questionIndex]?.answer}}</p>
+      <ngx-monaco-editor *ngIf="questions?.[questionIndex]?.answerSnippet" [options]="editorOptions" [(ngModel)]="questions[questionIndex].answerSnippet"></ngx-monaco-editor>
+    </div>
+  </div>
+
+  <label *ngIf="activeChapter === 'all'" class="all-chapter">Chapter: {{questions?.[questionIndex]?.chapter}}</label>
+  
+  <div class="button-container">
+    <button (click)="showAnswer = true">Answer</button>
+    <button (click)="showNextQuestion()">Next</button>
+    <button [routerLink]="['/add-question', questions?.[questionIndex]]">Update</button>
+    <button (click)="deleteQuestion(questions?.[questionIndex]?.id)">Delete</button>
+  </div>
+  
+  <div class="editor-container">
+    <ngx-monaco-editor [options]="editorOptions"></ngx-monaco-editor>
+  </div>
+</div>

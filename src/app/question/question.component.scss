@@ -1,0 +1,36 @@
+.question-answer-container {
+  border: 1px solid;
+  margin: 20px 0;
+  padding: 40px;
+  border-radius: 5px;
+}
+
+.editor-container {
+  margin-top: 20px;
+}
+
+.all-chapter {
+  margin-bottom: 20px;
+}
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+select {
+  align-self: start;
+}
+
+button {
+  & + & {
+    margin-left: 5px;
+  }
+  width: 100%;
+}
+
+.button-container {
+  display: flex;
+}
