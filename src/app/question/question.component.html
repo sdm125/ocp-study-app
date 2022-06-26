@@ -10,28 +10,28 @@
   
   <div class="question-answer-container">
     <div class="container">
-      <label>Question:</label>
-      <p>{{questions?.[questionIndex]?.question}}</p>
-      <ngx-monaco-editor *ngIf="questions?.[questionIndex]?.questionSnippet" [options]="editorOptions" [(ngModel)]="questions[questionIndex].questionSnippet"></ngx-monaco-editor>
+      <label *ngIf="activeChapter === 'all'" class="all-chapter">Chapter: {{currentQuestion?.chapter}}</label>
+      <label *ngIf="currentQuestion?.question">Question {{ ' ' + (questionIndex + 1)}}:</label>
+      <p>{{currentQuestion?.question ? currentQuestion?.question : 'You have reached the end of ' + (activeChapter === 'all' ? 'all questions' : ('Chapter ' + activeChapter)) + '.'}}</p>
+      <ngx-monaco-editor *ngIf="currentQuestion?.questionSnippet" [options]="editorOptions" [(ngModel)]="currentQuestion.questionSnippet"></ngx-monaco-editor>
     </div>
     
     <div class="container" *ngIf="showAnswer">
       <label>Answer:</label>
-      <p>{{questions?.[questionIndex]?.answer}}</p>
-      <ngx-monaco-editor *ngIf="questions?.[questionIndex]?.answerSnippet" [options]="editorOptions" [(ngModel)]="questions[questionIndex].answerSnippet"></ngx-monaco-editor>
+      <p class="answer">{{currentQuestion?.answer}}</p>
+      <ngx-monaco-editor *ngIf="currentQuestion?.answerSnippet" [options]="editorOptions" [(ngModel)]="currentQuestion.answerSnippet"></ngx-monaco-editor>
     </div>
-  </div>
-
-  <label *ngIf="activeChapter === 'all'" class="all-chapter">Chapter: {{questions?.[questionIndex]?.chapter}}</label>
-  
+  </div>  
   <div class="button-container">
-    <button (click)="showAnswer = true">Answer</button>
+    <button *ngIf="currentQuestion?.question" (click)="showAnswer = true">Answer</button>
     <button (click)="showNextQuestion()">Next</button>
-    <button [routerLink]="['/add-question', questions?.[questionIndex]]">Update</button>
-    <button (click)="deleteQuestion(questions?.[questionIndex]?.id)">Delete</button>
+    <button *ngIf="!edit && currentQuestion?.question" (click)="edit = true">Edit</button>
+    <button *ngIf="edit" [routerLink]="['/add-question', questions?.[questionIndex]]">Update</button>
+    <button *ngIf="edit" (click)="deleteQuestion(questions?.[questionIndex]?.id)">Delete</button>
   </div>
   
   <div class="editor-container">
+    <label>Practice Editor:</label>
     <ngx-monaco-editor [options]="editorOptions"></ngx-monaco-editor>
   </div>
 </div>

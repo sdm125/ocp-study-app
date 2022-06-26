@@ -16,7 +16,7 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
     answer: new FormControl(),
     chapter: new FormControl(),
   });
-  private idToUpdate: number;
+  private idToUpdate: number | null;
   public editorOptions = { theme: 'vs-dark', language: 'java' };
   private subs = new Subscription();
   public questionSnippet: string;
@@ -31,12 +31,11 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs.add(
       this.activatedRoute.params.subscribe((q) => {
+        if (Object.keys(q).length < 1) return;
         this.idToUpdate = q['id'];
         this.addQuestionForm.setValue({
           question: q['question'] || '',
-          // questionSnippet: q['questionSnippet'] || '',
           answer: q['answer'] || '',
-          // answerSnippet: q['answerSnippet'] || '',
           chapter: q['chapter'] || '',
         });
         this.questionSnippet = q['questionSnippet'];
@@ -56,7 +55,7 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
     };
 
     if (this.isUpdate) {
-      question.id = this.idToUpdate;
+      question.id = this.idToUpdate as number;
       this.updateQuestion(question);
     } else {
       this.addQuestion(question);
@@ -65,6 +64,7 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
     this.addQuestionForm.reset();
     this.questionSnippet = '';
     this.answerSnippet = '';
+    this.idToUpdate = null;
   }
 
   private addQuestion(question: Question): void {

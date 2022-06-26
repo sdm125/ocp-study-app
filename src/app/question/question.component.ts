@@ -17,6 +17,8 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public chapters: number[];
   public activeChapter: string = 'all';
   private subs = new Subscription();
+  public edit: boolean = false;
+  public currentQuestion: Question;
 
   public editorOptions = { theme: 'vs-dark', language: 'java' };
 
@@ -34,6 +36,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
       ?.pipe(take(1))
       .subscribe((res) => {
         this.questions = res.data;
+        this.currentQuestion = this.questions[0];
       });
 
     this.subs.add(chaptersSub);
@@ -46,6 +49,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
   public onChapterChange(chapter: string): void {
     this.activeChapter = chapter;
+    this.questionIndex = 0;
     this.getQuestions(chapter)
       ?.pipe(
         take(1),
@@ -53,6 +57,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
       )
       .subscribe((res) => {
         this.questions = res.data;
+        this.currentQuestion = this.questions[this.questionIndex];
       });
     this.showAnswer = false;
   }
@@ -66,7 +71,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   public deleteQuestion(id: number | undefined): void {
-    if (id) {
+    if (id && confirm('Are you sure you want to delete this question?')) {
       this.questionService
         .deleteQuestion(id)
         .pipe(take(1))
@@ -77,11 +82,13 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   public showNextQuestion(): void {
-    if (this.questionIndex + 1 < this.questions.length) {
+    if (this.questionIndex + 1 <= this.questions.length) {
       this.questionIndex++;
     } else {
       this.questionIndex = 0;
     }
+    this.currentQuestion = this.questions[this.questionIndex];
+    this.edit = false;
     this.showAnswer = false;
   }
 

@@ -10,7 +10,8 @@
 }
 
 .all-chapter {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  display: block;
 }
 
 .question-container {
@@ -28,9 +29,13 @@ button {
   & + & {
     margin-left: 5px;
   }
-  width: 100%;
+  width: 33.3%;
 }
 
 .button-container {
   display: flex;
+}
+
+.answer {
+  white-space: pre-wrap;
 }
