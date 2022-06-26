@@ -32,6 +32,16 @@ button {
   width: 33.3%;
 }
 
+button[disabled] {
+  color: #4f4f4f;
+  background-color: #e5e5f7;
+  opacity: 0.5;
+  background-color: #e0e0e0;
+  opacity: 0.6;
+  background-size: 10px 10px;
+  background-image: repeating-linear-gradient(45deg, #9b9b9b 0, #9b9b9b 1px, #e0e0e0 0, #e0e0e0 25%);
+}
+
 .button-container {
   display: flex;
 }

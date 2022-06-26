@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { Response } from '../model/Response';
 import { Question } from '../model/Question';
 
@@ -13,6 +13,7 @@ export class QuestionService {
   private questions: Observable<Response<Question[]>> | null;
   private chapterQuestions: Map<string, Observable<Response<Question[]>>> =
     new Map();
+  public editQuestion: ReplaySubject<Question> = new ReplaySubject(1);
 
   public getQuestions(): Observable<Response<Question[]>> {
     if (!this.questions) {
@@ -93,5 +94,9 @@ export class QuestionService {
   private clearQuestionsCache(): void {
     this.questions = null;
     this.chapterQuestions.clear();
+  }
+
+  public setEditQuestion(question: Question): void {
+    this.editQuestion.next(question);
   }
 }

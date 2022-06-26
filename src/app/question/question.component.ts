@@ -81,12 +81,30 @@ export class QuestionComponent implements OnInit, OnDestroy {
     }
   }
 
+  public updateQuestion(): void {
+    this.questionService.setEditQuestion(this.currentQuestion);
+    this.router.navigate(['/add-question']);
+  }
+
   public showNextQuestion(): void {
     if (this.questionIndex + 1 <= this.questions.length) {
       this.questionIndex++;
     } else {
       this.questionIndex = 0;
     }
+    this.showQuestion();
+  }
+
+  public showPrevQuestion(): void {
+    if (this.questionIndex > 0) {
+      this.questionIndex--;
+    } else {
+      this.questionIndex = this.questions.length - 1;
+    }
+    this.showQuestion();
+  }
+
+  private showQuestion(): void {
     this.currentQuestion = this.questions[this.questionIndex];
     this.edit = false;
     this.showAnswer = false;

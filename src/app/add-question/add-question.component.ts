@@ -23,23 +23,20 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
   public answerSnippet: string;
   private isUpdate: boolean = false;
 
-  constructor(
-    private questionService: QuestionService,
-    private activatedRoute: ActivatedRoute
-  ) {}
+  constructor(private questionService: QuestionService) {}
 
   ngOnInit(): void {
     this.subs.add(
-      this.activatedRoute.params.subscribe((q) => {
+      this.questionService.editQuestion.subscribe((q: Question) => {
         if (Object.keys(q).length < 1) return;
-        this.idToUpdate = q['id'];
+        this.idToUpdate = q.id as number;
         this.addQuestionForm.setValue({
-          question: q['question'] || '',
-          answer: q['answer'] || '',
-          chapter: q['chapter'] || '',
+          question: q.question || '',
+          answer: q.answer || '',
+          chapter: q.chapter || '',
         });
-        this.questionSnippet = q['questionSnippet'];
-        this.answerSnippet = q['answerSnippet'];
+        this.questionSnippet = q.questionSnippet || '';
+        this.answerSnippet = q.answerSnippet || '';
         this.isUpdate = true;
       })
     );
