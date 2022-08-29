@@ -1,5 +1,5 @@
 <div class="question-container">
-  <select (change)="onChapterChange(chapterSelect.value)" #chapterSelect>
+  <select (change)="getChapterQuestions(chapterSelect.value)" #chapterSelect>
     <option value="all">
       All Chapters
     </option>
@@ -10,29 +10,51 @@
   
   <div class="question-answer-container">
     <div class="container">
-      <label *ngIf="activeChapter === 'all' && currentQuestion?.question" class="all-chapter">Chapter: {{currentQuestion?.chapter}}</label>
-      <label *ngIf="currentQuestion?.question">Question {{ ' ' + (questionIndex + 1)}}:</label>
+      <label *ngIf="activeChapter === 'all' && currentQuestion?.question" class="all-chapter">Chapter {{currentQuestion?.chapter}}</label>
+      <label *ngIf="currentQuestion?.question">Question {{ ' ' + (questionIndex + 1)}}</label>
       <p>{{currentQuestion?.question ? currentQuestion?.question : 'You have reached the end of ' + (activeChapter === 'all' ? 'all questions' : ('Chapter ' + activeChapter)) + '.'}}</p>
-      <ngx-monaco-editor *ngIf="currentQuestion?.questionSnippet" [options]="editorOptions" [(ngModel)]="currentQuestion.questionSnippet"></ngx-monaco-editor>
+      <ng-container *ngIf="!currentQuestion?.question">
+        <p *ngIf="!isReview">
+          Score: {{ questions.length - getNumberQuestionsWrong() }} / {{ questions.length }}
+        </p>
+        <p *ngIf="isReview">
+          {{ getNumberQuestionsWrong() > 0 ? getNumberQuestionsWrong() + " review questions remaining." : "All review questions have been answered correctly." }} 
+        </p>
+        <div >
+          <button *ngIf="getNumberQuestionsWrong() > 0" (click)="reviewMissedQuestions()" style="margin-right: 5px">Review Missed Questions</button>
+          <button (click)="getChapterQuestions(activeChapter);">Review All Questions</button>
+        </div>
+      </ng-container>
+      <div>
+        <ngx-monaco-editor *ngIf="currentQuestion?.questionSnippet" [options]="editorOptions" [(ngModel)]="currentQuestion.questionSnippet"></ngx-monaco-editor>
+      </div>
     </div>
     
     <div class="container" *ngIf="showAnswer">
-      <label>Answer:</label>
+      <label>Answer</label> 
       <p class="answer">{{currentQuestion?.answer}}</p>
-      <ngx-monaco-editor *ngIf="currentQuestion?.answerSnippet" [options]="editorOptions" [(ngModel)]="currentQuestion.answerSnippet"></ngx-monaco-editor>
+      <div>
+        <ngx-monaco-editor *ngIf="currentQuestion?.answerSnippet" [options]="editorOptions" [(ngModel)]="currentQuestion.answerSnippet"></ngx-monaco-editor>
+      </div>
     </div>
-  </div>  
+
+    <ng-container *ngIf="showAnswer">
+      <button class="grade-button right-button" (click)="markQuestionRight()">✓</button>
+      <button class="grade-button wrong-button" (click)="markQuestionWrong()">✗</button>
+    </ng-container>
+  </div>
+
   <div class="button-container">
-    <button [attr.disabled]="!currentQuestion?.question ? true : null" (click)="showAnswer = true">Answer</button>
-    <button (click)="showPrevQuestion()">BACK</button>
-    <button (click)="showNextQuestion()">Next</button>
-    <button *ngIf="!edit" [attr.disabled]="!currentQuestion?.question ? true : null" (click)="edit = true">Edit</button>
+    <button [attr.disabled]="questionStatus" (click)="showAnswer = true">Answer</button>
+    <button [attr.disabled]="questionStatus" (click)="showNextQuestion()">Next</button>
+    <button [attr.disabled]="questionStatus" (click)="showPrevQuestion()">BACK</button>
+    <button *ngIf="!edit" [attr.disabled]="questionStatus" (click)="edit = true">Edit</button>
     <button *ngIf="edit" (click)="updateQuestion()">Update</button>
     <button *ngIf="edit" (click)="deleteQuestion(questions?.[questionIndex]?.id)">Delete</button>
   </div>
   
   <div class="editor-container">
-    <label>Practice Editor:</label>
+    <label>Practice Editor</label>
     <ngx-monaco-editor [options]="editorOptions"></ngx-monaco-editor>
   </div>
 </div>

@@ -1,8 +1,9 @@
 .question-answer-container {
   border: 1px solid;
   margin: 20px 0;
-  padding: 40px;
+  padding: 40px 40px 45px 40px;
   border-radius: 5px;
+  position: relative;
 }
 
 .editor-container {
@@ -25,13 +26,6 @@ select {
   align-self: start;
 }
 
-button {
-  & + & {
-    margin-left: 5px;
-  }
-  width: 33.3%;
-}
-
 button[disabled] {
   color: #4f4f4f;
   background-color: #e5e5f7;
@@ -44,6 +38,45 @@ button[disabled] {
 
 .button-container {
   display: flex;
+
+  button {
+    &:not(:first-child) {
+      margin-left: 5px;
+    }
+    width: 33.3%;
+  }
+}
+
+.grade-button {
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.right-button {
+  left: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0;
+  border: 0;
+  background-color: #46d746;
+  &:hover {
+    background-color: #00a200;
+  }
+}
+
+.wrong-button {
+  right: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border: 0;
+  background-color: #ff163c;
+  &:hover {
+    background-color: #cf0728;
+  }
 }
 
 .answer {

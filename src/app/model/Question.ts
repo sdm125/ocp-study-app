@@ -5,4 +5,5 @@ export interface Question {
   answer: string;
   answerSnippet?: string;
   chapter: number;
+  answeredCorrect?: boolean;
 }

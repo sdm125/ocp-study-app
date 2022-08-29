@@ -1,9 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { QuestionService } from '../service/question.service';
 import { Question } from '../model/Question';
 import { map, Observable, Subscription, take, tap } from 'rxjs';
 import { Response } from '../model/Response';
 import { Router } from '@angular/router';
+import { NgxEditorModel, EditorComponent } from 'ngx-monaco-editor';
+import { Editor } from '../model/Editor';
 
 @Component({
   selector: 'app-question',
@@ -11,7 +13,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./question.component.scss'],
 })
 export class QuestionComponent implements OnInit, OnDestroy {
-  public questions: Question[];
+  public questions: Question[] = [];
   public questionIndex: number = 0;
   public showAnswer: boolean = false;
   public chapters: number[];
@@ -19,8 +21,10 @@ export class QuestionComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
   public edit: boolean = false;
   public currentQuestion: Question;
+  public isReview: boolean = false;
 
   public editorOptions = { theme: 'vs-dark', language: 'java' };
+  public editorHeight: Map<Editor, number> = new Map();
 
   constructor(
     private questionService: QuestionService,
@@ -47,13 +51,18 @@ export class QuestionComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
 
-  public onChapterChange(chapter: string): void {
+  get Editor() {
+    return Editor;
+  }
+
+  public getChapterQuestions(chapter: string): void {
     this.activeChapter = chapter;
     this.questionIndex = 0;
+    this.isReview = false;
     this.getQuestions(chapter)
       ?.pipe(
-        take(1),
-        tap((questions) => this.shuffleQuestions(questions.data))
+        take(1)
+        // tap((questions) => this.shuffleQuestions(questions.data))
       )
       .subscribe((res) => {
         this.questions = res.data;
@@ -117,5 +126,29 @@ export class QuestionComponent implements OnInit, OnDestroy {
       questions[i] = questions[randomIndex];
       questions[randomIndex] = currentQuestion;
     }
+  }
+
+  public markQuestionWrong(): void {
+    this.currentQuestion.answeredCorrect = false;
+    this.showNextQuestion();
+  }
+
+  public markQuestionRight(): void {
+    this.currentQuestion.answeredCorrect = true;
+    this.showNextQuestion();
+  }
+
+  public getNumberQuestionsWrong(): number {
+    return this.questions?.filter((q) => !q.answeredCorrect).length;
+  }
+
+  public reviewMissedQuestions(): void {
+    this.questions = this.questions.filter((q) => !q.answeredCorrect);
+    this.isReview = true;
+    this.showNextQuestion();
+  }
+
+  get questionStatus() {
+    return !this.currentQuestion?.question ? true : null;
   }
 }

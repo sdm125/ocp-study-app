@@ -69,9 +69,14 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
       this.questionService
         .addQuestion(question)
         .pipe(take(1))
-        .subscribe((res) => {
-          console.log(res);
-        })
+        .subscribe(
+          (res) => {
+            console.log(res);
+          },
+          (error) => {
+            alert('Error question not added');
+          }
+        )
     );
   }
 
@@ -84,9 +89,14 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
       this.questionService
         .updateQuestion(question)
         .pipe(take(1))
-        .subscribe((res) => {
-          console.log(res);
-        });
+        .subscribe(
+          (res) => {
+            console.log(res);
+          },
+          (error) => {
+            alert('Error question not added');
+          }
+        );
     }
   }
 }
