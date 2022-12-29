@@ -1,11 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { QuestionService } from '../service/question.service';
 import { Question } from '../model/Question';
-import { map, Observable, Subscription, take, tap } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { Response } from '../model/Response';
 import { Router } from '@angular/router';
 import { NgxEditorModel, EditorComponent } from 'ngx-monaco-editor';
 import { Editor } from '../model/Editor';
+import { UserService } from '../service/user.service';
 
 @Component({
   selector: 'app-question',
@@ -22,12 +23,14 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public edit: boolean = false;
   public currentQuestion: Question;
   public isReview: boolean = false;
+  public isAdmin: boolean;
 
   public editorOptions = { theme: 'vs-dark', language: 'java' };
   public editorHeight: Map<Editor, number> = new Map();
 
   constructor(
     private questionService: QuestionService,
+    private userService: UserService,
     private router: Router
   ) {}
 
@@ -45,6 +48,8 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
     this.subs.add(chaptersSub);
     this.subs.add(questionSub);
+
+    this.isAdmin = this.userService.hasAdminAccess();
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+}
+
 h1, h2, h3, p, button, select, label, a, option {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Roboto', monospace;
 }
 
 button {

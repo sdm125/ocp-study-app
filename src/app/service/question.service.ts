@@ -13,7 +13,7 @@ export class QuestionService {
   private questions: Observable<Response<Question[]>> | null;
   private chapterQuestions: Map<string, Observable<Response<Question[]>>> =
     new Map();
-  public editQuestion: ReplaySubject<Question> = new ReplaySubject(1);
+  public editQuestion$: ReplaySubject<Question> = new ReplaySubject(1);
 
   public getQuestions(): Observable<Response<Question[]>> {
     if (!this.questions) {
@@ -97,6 +97,6 @@ export class QuestionService {
   }
 
   public setEditQuestion(question: Question): void {
-    this.editQuestion.next(question);
+    this.editQuestion$.next(question);
   }
 }

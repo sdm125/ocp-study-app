@@ -1,4 +1,13 @@
 <nav>
-  <a href="/quiz">Quiz</a>
-  <a href="/add-question">Add Question</a>
+  <div class="menu">
+    <a [routerLink]="['/quiz']" [routerLinkActive]="['is-active']">Quiz</a>
+    <a *ngIf="userService.hasAdminAccess()" 
+       [routerLink]="['/add-question']" 
+       [routerLinkActive]="['is-active']">Add Question</a>
+  </div>
+  <a *ngIf="!userService.isUserLoggedIn()" [routerLink]="['/login']" [routerLinkActive]="['is-active']">Log In</a>
+  <a *ngIf="userService.isUserLoggedIn()" 
+    (click)="userService.logout()" 
+    [routerLink]="['/login']" 
+    [routerLinkActive]="['is-active']">Log Out</a>
 </nav>

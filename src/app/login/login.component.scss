@@ -1,0 +1,19 @@
+.field {
+  margin-bottom: 15px;
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input {
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+
+    @media (min-width: 500px) {
+      width: 40%;
+    }
+  }
+}

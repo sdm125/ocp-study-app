@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -9,6 +9,8 @@ import { AddQuestionComponent } from './add-question/add-question.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { LoginComponent } from './login/login.component';
+import { AuthInterceptor } from './interceptor/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -16,6 +18,7 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
     QuestionComponent,
     AddQuestionComponent,
     NavigationComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -25,7 +28,13 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
     FormsModule,
     MonacoEditorModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

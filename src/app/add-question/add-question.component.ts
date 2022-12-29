@@ -27,7 +27,7 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subs.add(
-      this.questionService.editQuestion.subscribe((q: Question) => {
+      this.questionService.editQuestion$.subscribe((q: Question) => {
         if (Object.keys(q).length < 1) return;
         this.idToUpdate = q.id as number;
         this.addQuestionForm.setValue({

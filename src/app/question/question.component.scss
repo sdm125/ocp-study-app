@@ -1,9 +1,13 @@
 .question-answer-container {
   border: 1px solid;
   margin: 20px 0;
-  padding: 40px 40px 45px 40px;
+  padding: 8px;
   border-radius: 5px;
   position: relative;
+
+  @media (min-width: 768px) {
+    padding: 40px 40px 45px 40px;
+  }
 }
 
 .editor-container {
@@ -38,12 +42,24 @@ button[disabled] {
 
 .button-container {
   display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+
+  @media (min-width: 600px) {
+    flex-wrap: nowrap;
+  }
 
   button {
-    &:not(:first-child) {
-      margin-left: 5px;
+    width: calc(50% - 4px);
+  }
+
+  &.admin-controls {
+    button {
+      width: calc(50% - 4px);
+      @media (min-width: 600px) {
+        width: calc(33.3% - 4px);
+      }
     }
-    width: 33.3%;
   }
 }
 
