@@ -1,28 +1,26 @@
 <form [formGroup]="addQuestionForm" (ngSubmit)="submitQuestion()">
   <div class="container">
-    <label>Question</label><br>
+    <label>Question</label>
     <textarea formControlName="question" rows="5" required="true"></textarea>
   </div>
 
   <div class="container">
-    <label>Question Snippet</label><br>
-    <!-- <textarea formControlName="questionSnippet" rows="5"></textarea> -->
+    <label>Question Snippet</label>
     <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="questionSnippet" [ngModelOptions]="{standalone: true}"></ngx-monaco-editor>
   </div>
   
   <div class="container">
-    <label>Answer</label><br>
+    <label>Answer</label>
     <textarea formControlName="answer" rows="5" required="true"></textarea>
   </div>
 
   <div class="container">
-    <label>Answer Snippet</label><br>
-    <!-- <textarea formControlName="answerSnippet" rows="5"></textarea> -->
+    <label>Answer Snippet</label>
     <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="answerSnippet" [ngModelOptions]="{standalone: true}"></ngx-monaco-editor>
   </div>
   
-  <div>
-    <label>Chapter</label><br>
+  <div class="container">
+    <label>Chapter</label>
     <input type="number" formControlName="chapter" min="1" max="21">
   </div>
   
