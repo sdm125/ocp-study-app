@@ -3,17 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Response } from '../model/Response';
 import { Question } from '../model/Question';
+import { QuestionState } from '../model/QuestionState';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuestionService {
-  constructor(private httpClient: HttpClient) {}
-
   private questions: Observable<Response<Question[]>> | null;
   private chapterQuestions: Map<string, Observable<Response<Question[]>>> =
     new Map();
   public editQuestion$: ReplaySubject<Question> = new ReplaySubject(1);
+  public questionState$: ReplaySubject<QuestionState> = new ReplaySubject();
+
+  constructor(private httpClient: HttpClient) {}
 
   public getQuestions(): Observable<Response<Question[]>> {
     if (!this.questions) {

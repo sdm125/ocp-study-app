@@ -3,7 +3,7 @@
     <option value="all">
       All Chapters
     </option>
-    <option *ngFor="let chapter of chapters" [value]="chapter">
+    <option *ngFor="let chapter of chapters" [value]="chapter" [attr.selected]="chapter.toString() === activeChapter ? true : null">
       Chapter {{chapter}}
     </option>
   </select>
