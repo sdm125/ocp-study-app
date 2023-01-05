@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subscription, take } from 'rxjs';
 import { Question } from '../model/Question';
 import { QuestionService } from '../service/question.service';
@@ -23,11 +23,14 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
   public answerSnippet: string;
   private isUpdate: boolean = false;
 
-  constructor(private questionService: QuestionService) {}
+  constructor(
+    private questionService: QuestionService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.subs.add(
-      this.questionService.editQuestion$.subscribe((q: Question) => {
+      this.questionService.getEditQuestion().subscribe((q: Question) => {
         if (Object.keys(q).length < 1) return;
         this.idToUpdate = q.id as number;
         this.addQuestionForm.setValue({
@@ -82,6 +85,7 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.unsubscribe();
+    this.questionService.resetEditQuestion();
   }
 
   public updateQuestion(question: Question | undefined): void {
@@ -92,6 +96,7 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
         .subscribe(
           (res) => {
             console.log(res);
+            this.router.navigate(['quiz']);
           },
           (error) => {
             alert('Error question not added');

@@ -1,13 +1,15 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 import { UserToken } from '../model/UserToken';
+import { Properties } from '../properties';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private router: Router) {}
 
   public getUserToken(
     username: string,
@@ -18,11 +20,30 @@ export class UserService {
     form.append('password', password);
 
     return this.httpClient
-      .post<UserToken>('http://localhost:8080/ocp/login', form)
+      .post<UserToken>(Properties.LOGIN_ENDPOINT, form)
       .pipe(tap((res) => this.setSession(res)));
   }
 
-  private setSession(res: UserToken): void {
+  public refreshUserToken(): Observable<UserToken> {
+    if (this.isTokenExp(this.getRefreshToken())) {
+      this.logout();
+    }
+
+    const headers = new HttpHeaders().append(
+      'Authorization',
+      'Bearer ' + this.getRefreshToken()
+    );
+
+    return this.httpClient.post<UserToken>(
+      Properties.REFRESH_TOKEN_ENDPOINT,
+      null,
+      {
+        headers: headers,
+      }
+    );
+  }
+
+  public setSession(res: UserToken): void {
     localStorage.setItem('access_token', res.access_token);
     localStorage.setItem('refresh_token', res.refresh_token);
   }
@@ -35,9 +56,14 @@ export class UserService {
     return localStorage.getItem('access_token');
   }
 
+  public getRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
+  }
+
   public logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    this.router.navigate(['login']);
   }
 
   public hasAdminAccess(): any {
@@ -50,5 +76,16 @@ export class UserService {
       const data = JSON.parse(atob(extractedToken));
       return data.roles.includes('ROLE_ADMIN');
     }
+  }
+
+  public isTokenExp(token: string | null): boolean {
+    const extractedToken = token?.split('.')[1];
+
+    if (extractedToken) {
+      const data = JSON.parse(atob(extractedToken));
+      return data.exp * 1000 < Date.now();
+    }
+
+    return true;
   }
 }

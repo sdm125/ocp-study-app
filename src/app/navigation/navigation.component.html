@@ -6,8 +6,8 @@
        [routerLinkActive]="['is-active']">Add Question</a>
   </div>
   <a *ngIf="!userService.isUserLoggedIn()" [routerLink]="['/login']" [routerLinkActive]="['is-active']">Log In</a>
-  <a *ngIf="userService.isUserLoggedIn()" 
+  <a *ngIf="userService.isUserLoggedIn()"
+  [routerLink]="['/login']" 
     (click)="userService.logout()" 
-    [routerLink]="['/login']" 
     [routerLinkActive]="['is-active']">Log Out</a>
 </nav>

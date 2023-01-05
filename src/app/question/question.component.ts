@@ -1,13 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { QuestionService } from '../service/question.service';
 import { Question } from '../model/Question';
-import { isEmpty, map, Observable, Subscription, take } from 'rxjs';
+import {
+  isEmpty,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  Subscription,
+  take,
+} from 'rxjs';
 import { Response } from '../model/Response';
 import { Router } from '@angular/router';
 import { NgxEditorModel, EditorComponent } from 'ngx-monaco-editor';
 import { Editor } from '../model/Editor';
 import { UserService } from '../service/user.service';
 import { QuestionState } from '../model/QuestionState';
+import { Status } from '../model/Status';
 
 @Component({
   selector: 'app-question',
@@ -38,11 +47,15 @@ export class QuestionComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const chaptersSub = this.questionService.getChapters().subscribe((res) => {
-      this.chapters = res.data;
-    });
+    const chaptersSub = this.questionService.getChapters().subscribe(
+      (res) => {
+        this.chapters = res.data;
+      },
+      (error) => {}
+    );
 
-    this.questionService.questionState$
+    const isEmptySub = this.questionService
+      .getQuestionState()
       .pipe(
         isEmpty(),
         map((isEmpty) => {
@@ -51,15 +64,21 @@ export class QuestionComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    const questionStateSub = this.questionService.questionState$.subscribe(
-      (state) => {
-        this.questionState = state;
-        this.questions = state.questions;
-        this.questionIndex = state.questionIndex;
-        this.activeChapter = state.activeChapter;
+    const questionStateSub = this.questionService
+      .getQuestionState()
+      .pipe(
+        mergeMap((state) => {
+          const { questionIndex, activeChapter } = state;
+          this.questionIndex = questionIndex;
+          this.activeChapter = activeChapter;
+          this.setQuestionState();
+          return this.getQuestions(this.activeChapter);
+        })
+      )
+      .subscribe((res) => {
+        this.questions = res.data;
         this.currentQuestion = this.questions[this.questionIndex];
-      }
-    );
+      });
 
     if (this.isQuestionStateEmpty) {
       this.getQuestions('all')?.subscribe((res) => {
@@ -72,13 +91,14 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
     this.subs.add(chaptersSub);
     this.subs.add(questionStateSub);
-
+    this.subs.add(isEmptySub);
     this.isAdmin = this.userService.hasAdminAccess();
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
-    this.questionService.questionState$.next(this.questionState);
+    console.log(this.questionState);
+    this.questionService.setQuestionState(this.questionState);
   }
 
   get Editor() {
@@ -105,24 +125,40 @@ export class QuestionComponent implements OnInit, OnDestroy {
   private setQuestionState(): void {
     this.questionState.activeChapter = this.activeChapter;
     this.questionState.questionIndex = this.questionIndex;
-    this.questionState.questions = this.questions;
   }
 
-  private getQuestions(
-    chapter: string
-  ): Observable<Response<Question[]>> | undefined {
-    return chapter === 'all'
-      ? this.questionService.getQuestions()
-      : this.questionService.getQuestionByChapter(chapter);
+  private getQuestions(chapter: string): Observable<Response<Question[]>> {
+    return (
+      chapter === 'all'
+        ? this.questionService.getQuestions()
+        : this.questionService.getQuestionByChapter(chapter)
+    ).pipe(
+      map((res) => {
+        res.data.sort((a, b) => (a?.id || 0) - (b?.id || 0));
+        return res;
+      })
+    );
   }
 
   public deleteQuestion(id: number | undefined): void {
     if (id && confirm('Are you sure you want to delete this question?')) {
       this.questionService
         .deleteQuestion(id)
-        .pipe(take(1))
+        .pipe(
+          take(1),
+          mergeMap((res) => {
+            if (res.status === Status.SUCCESS) {
+              return this.questionService.getQuestionByChapter(
+                this.activeChapter
+              );
+            }
+            return of();
+          })
+        )
         .subscribe((res) => {
-          console.log(res);
+          this.questions = res.data;
+          this.questionIndex = 0;
+          this.currentQuestion = this.questions[this.questionIndex];
         });
     }
   }
@@ -190,7 +226,4 @@ export class QuestionComponent implements OnInit, OnDestroy {
   get questionStatus() {
     return !this.currentQuestion?.question ? true : null;
   }
-}
-function ngAfterViewInit() {
-  throw new Error('Function not implemented.');
 }
