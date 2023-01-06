@@ -40,6 +40,31 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public editorOptions = { theme: 'vs-dark', language: 'java' };
   public editorHeight: Map<Editor, number> = new Map();
 
+  public chapterNames: Map<number, string> = new Map<number, string>([
+    [1, 'Chapter 1 Welcome to Java'],
+    [2, 'Chapter 2 Java Building Blocks'],
+    [3, 'Chapter 3 Operators'],
+    [4, 'Chapter 4 Making Decisions'],
+    [5, 'Chapter 5 Core Java APIs'],
+    [6, 'Chapter 6 Lambdas and Functional Interfaces'],
+    [7, 'Chapter 7 Methods and Encapsulation'],
+    [8, 'Chapter 8 Class Design'],
+    [9, 'Chapter 9 Advanced Class Design'],
+    [10, 'Chapter 10 Exceptions'],
+    [11, 'Chapter 11 Modules'],
+    [12, 'Chapter 12 Java Fundamentals'],
+    [13, 'Chapter 13 Annotations'],
+    [14, 'Chapter 14 Generics and Collections'],
+    [15, 'Chapter 15 Functional Programming'],
+    [16, 'Chapter 16 Exceptions, Assertions, and Localization'],
+    [17, 'Chapter 17 Modular Applications'],
+    [18, 'Chapter 18 Concurrency'],
+    [19, 'Chapter 19 I/O'],
+    [20, 'Chapter 20 NIO.2'],
+    [21, 'Chapter 21 JDBC'],
+    [22, 'Chapter 22 Security'],
+  ]);
+
   constructor(
     private questionService: QuestionService,
     private userService: UserService,

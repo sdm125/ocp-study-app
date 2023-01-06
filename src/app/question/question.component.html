@@ -1,10 +1,10 @@
 <div class="question-container">
-  <select (change)="getChapterQuestions(chapterSelect.value)" #chapterSelect>
+  <select (change)="getChapterQuestions(chapterSelect.value)" #chapterSelect class="chapter-select">
     <option value="all">
       All Chapters
     </option>
     <option *ngFor="let chapter of chapters" [value]="chapter" [attr.selected]="chapter.toString() === activeChapter ? true : null">
-      Chapter {{chapter}}
+      {{chapterNames.get(chapter)}}
     </option>
   </select>
   
