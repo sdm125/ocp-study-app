@@ -11,9 +11,9 @@
   <div class="question-answer-container">
     <div class="container">
       <label *ngIf="activeChapter === 'all' && currentQuestion?.question" class="all-chapter">Chapter {{currentQuestion?.chapter}}</label>
-      <label *ngIf="currentQuestion?.question">Question {{ ' ' + (questionIndex + 1)}}</label>
-      <p>{{currentQuestion?.question ? currentQuestion?.question : 'You have reached the end of ' + (activeChapter === 'all' ? 'all questions' : ('Chapter ' + activeChapter)) + '.'}}</p>
-      <ng-container *ngIf="!currentQuestion?.question">
+      <label *ngIf="showCurrentQuestion">Question {{ ' ' + (questionIndex + 1)}}</label>
+      <p>{{showCurrentQuestion ? currentQuestion?.question : 'You have reached the end of ' + (activeChapter === 'all' ? 'all questions' : ('Chapter ' + activeChapter)) + '.'}}</p>
+      <ng-container *ngIf="!showCurrentQuestion">
         <p *ngIf="!isReview">
           Score: {{ questions.length - getNumberQuestionsWrong() }} / {{ questions.length }}
         </p>

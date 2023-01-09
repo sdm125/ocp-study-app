@@ -159,7 +159,28 @@ export class QuestionComponent implements OnInit, OnDestroy {
         : this.questionService.getQuestionByChapter(chapter)
     ).pipe(
       map((res) => {
-        res.data.sort((a, b) => (a?.id || 0) - (b?.id || 0));
+        const chapters = res.data.reduce(
+          (chapters: any, question: Question) => {
+            const chapterStr = question.chapter + '';
+            if (!chapters.hasOwnProperty(chapterStr)) {
+              chapters[chapterStr] = [];
+            }
+
+            chapters[chapterStr].push(question);
+
+            return chapters;
+          },
+          {}
+        );
+        res.data = Object.keys(chapters).reduce(
+          (questions: Question[], chapter) => {
+            (chapters[chapter] as Question[]).sort(
+              (a, b) => (a?.id || 0) - (b?.id || 0)
+            );
+            return [...questions, ...chapters[chapter]];
+          },
+          []
+        );
         return res;
       })
     );
@@ -219,6 +240,10 @@ export class QuestionComponent implements OnInit, OnDestroy {
     this.showAnswer = false;
   }
 
+  get showCurrentQuestion(): boolean {
+    return this.currentQuestion?.question !== undefined;
+  }
+
   public shuffleQuestions(questions: Question[]): void {
     for (let i = questions.length - 1; i > 0; i--) {
       let randomIndex = Math.floor(Math.random() * (i + 1));
@@ -249,6 +274,9 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   get questionStatus() {
-    return !this.currentQuestion?.question ? true : null;
+    return !this.currentQuestion?.question &&
+      this.currentQuestion?.question === undefined
+      ? true
+      : null;
   }
 }
