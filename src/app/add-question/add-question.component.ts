@@ -29,20 +29,17 @@ export class AddQuestionComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.subs.add(
-      this.questionService.getEditQuestion().subscribe((q: Question) => {
-        if (Object.keys(q).length < 1) return;
-        this.idToUpdate = q.id as number;
-        this.addQuestionForm.setValue({
-          question: q.question || '',
-          answer: q.answer || '',
-          chapter: q.chapter || '',
-        });
-        this.questionSnippet = q.questionSnippet || '';
-        this.answerSnippet = q.answerSnippet || '';
-        this.isUpdate = true;
-      })
-    );
+    const q: Question | null = this.questionService.getEditQuestion();
+    if (!q || Object.keys(q).length < 1) return;
+    this.idToUpdate = q.id as number;
+    this.addQuestionForm.setValue({
+      question: q.question || '',
+      answer: q.answer || '',
+      chapter: q.chapter || '',
+    });
+    this.questionSnippet = q.questionSnippet || '';
+    this.answerSnippet = q.answerSnippet || '';
+    this.isUpdate = true;
   }
 
   public submitQuestion(): void {

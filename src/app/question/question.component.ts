@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { NgxEditorModel, EditorComponent } from 'ngx-monaco-editor';
 import { Editor } from '../model/Editor';
 import { UserService } from '../service/user.service';
-import { QuestionState } from '../model/QuestionState';
+import { QuizState } from '../model/QuizState';
 import { Status } from '../model/Status';
 
 @Component({
@@ -34,8 +34,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public currentQuestion: Question;
   public isReview: boolean = false;
   public isAdmin: boolean;
-  private questionState: QuestionState = new QuestionState();
-  private isQuestionStateEmpty: boolean = true;
+  private quizState: QuizState = new QuizState();
 
   public editorOptions = { theme: 'vs-dark', language: 'java' };
   public editorHeight: Map<Editor, number> = new Map();
@@ -69,7 +68,9 @@ export class QuestionComponent implements OnInit, OnDestroy {
     private questionService: QuestionService,
     private userService: UserService,
     private router: Router
-  ) {}
+  ) {
+    this.isAdmin = this.userService.hasAdminAccess();
+  }
 
   ngOnInit() {
     const chaptersSub = this.questionService.getChapters().subscribe(
@@ -78,52 +79,34 @@ export class QuestionComponent implements OnInit, OnDestroy {
       },
       (error) => {}
     );
+    this.subs.add(chaptersSub);
 
-    const isEmptySub = this.questionService
-      .getQuestionState()
-      .pipe(
-        isEmpty(),
-        map((isEmpty) => {
-          this.isQuestionStateEmpty = isEmpty;
-        })
-      )
-      .subscribe();
-
-    const questionStateSub = this.questionService
-      .getQuestionState()
-      .pipe(
-        mergeMap((state) => {
-          const { questionIndex, activeChapter } = state;
-          this.questionIndex = questionIndex;
-          this.activeChapter = activeChapter;
-          this.setQuestionState();
-          return this.getQuestions(this.activeChapter);
-        })
-      )
-      .subscribe((res) => {
-        this.questions = res.data;
-        this.currentQuestion = this.questions[this.questionIndex];
-      });
-
-    if (this.isQuestionStateEmpty) {
-      this.getQuestions('all')?.subscribe((res) => {
+    const quizState = this.questionService.getQuizState();
+    let quizSub;
+    if (!quizState) {
+      quizSub = this.getQuestions('all')?.subscribe((res) => {
         this.questions = res.data;
         this.currentQuestion = this.questions[0];
         this.activeChapter = 'all';
         this.setQuestionState();
       });
+    } else {
+      const { questionIndex, activeChapter } = quizState;
+      this.questionIndex = questionIndex;
+      this.activeChapter = activeChapter;
+      this.setQuestionState();
+      quizSub = this.getQuestions(this.activeChapter).subscribe((res) => {
+        this.questions = res.data;
+        this.currentQuestion = this.questions[this.questionIndex];
+      });
     }
 
-    this.subs.add(chaptersSub);
-    this.subs.add(questionStateSub);
-    this.subs.add(isEmptySub);
-    this.isAdmin = this.userService.hasAdminAccess();
+    this.subs.add(quizSub);
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
-    console.log(this.questionState);
-    this.questionService.setQuestionState(this.questionState);
+    this.questionService.setQuizState(this.quizState);
   }
 
   get Editor() {
@@ -148,8 +131,8 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   private setQuestionState(): void {
-    this.questionState.activeChapter = this.activeChapter;
-    this.questionState.questionIndex = this.questionIndex;
+    this.quizState.activeChapter = this.activeChapter;
+    this.quizState.questionIndex = this.questionIndex;
   }
 
   private getQuestions(chapter: string): Observable<Response<Question[]>> {

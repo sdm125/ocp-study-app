@@ -3,15 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Response } from '../model/Response';
 import { Question } from '../model/Question';
-import { QuestionState } from '../model/QuestionState';
+import { QuizState as QuizState } from '../model/QuizState';
 import { Properties } from '../properties';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuestionService {
-  private editQuestion$: ReplaySubject<Question> = new ReplaySubject(1);
-  private questionState$: ReplaySubject<QuestionState> = new ReplaySubject(1);
+  private editQuestion: Question | null;
+  private quizState: QuizState;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -79,23 +79,23 @@ export class QuestionService {
     );
   }
 
-  public getEditQuestion(): ReplaySubject<Question> {
-    return this.editQuestion$;
+  public getEditQuestion(): Question | null {
+    return this.editQuestion;
   }
 
   public setEditQuestion(question: Question): void {
-    this.editQuestion$.next(question);
+    this.editQuestion = question;
   }
 
   public resetEditQuestion(): void {
-    this.editQuestion$ = new ReplaySubject(1);
+    this.editQuestion = null;
   }
 
-  public setQuestionState(questionState: QuestionState): void {
-    this.questionState$.next(questionState);
+  public setQuizState(questionState: QuizState): void {
+    this.quizState = questionState;
   }
 
-  public getQuestionState(): ReplaySubject<QuestionState> {
-    return this.questionState$;
+  public getQuizState(): QuizState {
+    return this.quizState;
   }
 }
