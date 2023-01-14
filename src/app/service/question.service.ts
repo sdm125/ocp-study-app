@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Response } from '../model/Response';
 import { Question } from '../model/Question';
 import { QuizState as QuizState } from '../model/QuizState';
