@@ -3,7 +3,7 @@
   "short_name": "OCP Study",
   "theme_color": "#fafafa",
   "background_color": "#fafafa",
-  "display": "fullscreen",
+  "display": "standalone",
   "scope": "./",
   "start_url": "./",
   "icons": [
