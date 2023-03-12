@@ -147,6 +147,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
     this.quizState.activeChapter = this.activeChapter;
     this.quizState.questionIndex = this.questionIndex;
     this.quizState.questions = this.questions;
+    this.questionService.setQuizState(this.quizState);
   }
 
   private getQuestions(chapter: string): Observable<Response<Question[]>> {

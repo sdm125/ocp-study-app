@@ -91,11 +91,23 @@ export class QuestionService {
     this.editQuestion = null;
   }
 
-  public setQuizState(questionState: QuizState): void {
-    this.quizState = questionState;
+  public setQuizState(quizState: QuizState): void {
+    this.quizState = {
+      ...quizState,
+      questions: [...quizState.questions],
+    };
+    localStorage.setItem('quizState', JSON.stringify(this.quizState));
   }
 
   public getQuizState(): QuizState {
+    const quizState = localStorage.getItem('quizState');
+    if (quizState) {
+      this.quizState = JSON.parse(quizState);
+      return {
+        ...this.quizState,
+        questions: [...this.quizState.questions],
+      };
+    }
     return this.quizState;
   }
 }
