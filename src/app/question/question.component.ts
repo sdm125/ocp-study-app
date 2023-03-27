@@ -91,30 +91,13 @@ export class QuestionComponent implements OnInit, OnDestroy {
         this.setQuestionState();
       });
     } else {
-      const { questionIndex, activeChapter } = quizState;
+      const { questionIndex, activeChapter, questions } = quizState;
       this.questionIndex = questionIndex;
       this.activeChapter = activeChapter;
+      this.questions = questions;
+      this.currentQuestion = this.questions[this.questionIndex];
       this.setQuestionState();
-      quizSub = this.getQuestions(this.activeChapter).subscribe((res) => {
-        this.questions = res.data;
-
-        // Set updated questions answers
-        quizState.questions
-          .filter((q) => q.answeredCorrect !== undefined)
-          .forEach((answeredQuestion) => {
-            const question = this.questions.find(
-              (q) => q.id === answeredQuestion.id
-            );
-            if (question) {
-              question.answeredCorrect = answeredQuestion.answeredCorrect;
-            }
-          });
-
-        this.currentQuestion = this.questions[this.questionIndex];
-      });
     }
-
-    this.subs.add(quizSub);
   }
 
   ngOnDestroy(): void {
